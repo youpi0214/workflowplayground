@@ -47,16 +47,14 @@ jobs:
           BUILD_VERSION: ${{ inputs.build-version }}
         run: |
           if gh release view "$BUILD_VERSION" --repo "$TARGET_REPO" > /dev/null 2>&1; then
-            echo "Release $BUILD_VERSION already exists. Editing to ensure it's a draft."
-            gh release edit "$BUILD_VERSION" \
-              --repo "$TARGET_REPO" \
-              --draft=true
+            echo "Release $BUILD_VERSION already exists. Leaving it unchanged."
           else
-            echo "Preparing to create draft release $BUILD_VERSION."
+            echo "Creating draft release $BUILD_VERSION from existing tag."
             gh release create "$BUILD_VERSION" \
               --repo "$TARGET_REPO" \
               --title "$BUILD_VERSION" \
-              --draft
+              --draft \
+              --verify-tag
           fi
             
   update-config:
