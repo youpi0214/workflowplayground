@@ -120,8 +120,7 @@ jobs:
 
   close-release:
     runs-on: ubuntu-latest
-    needs: [check-tag-exists, open-release, update-config]
-    if: always()
+    needs: [update-config]
     steps:
       - name: Convert release back to draft
         env:
