@@ -71,7 +71,9 @@ jobs:
           git add "$FILE_PATH"
 
           if ! git diff --cached --quiet; then
-            git commit -m "${{ github.event.repository.name }} (run #${{ github.run_number }}): Update app version to ${{ inputs.build-version }}"
+            git commit \
+              -m "${{ github.event.repository.name }}: Changed version to ${{ inputs.build-version }}" \
+              -m "Workflow run #${{ github.run_number }} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             git push
           else
             echo "::error::No changes to commit"
