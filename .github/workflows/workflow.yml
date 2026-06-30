@@ -76,6 +76,5 @@ jobs:
               -m "Workflow run #${{ github.run_number }} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             git push
           else
-            echo "::error::No changes to commit"
-            exit 1
+            echo "::warning::No changes to commit"
           fi
