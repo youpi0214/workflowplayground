@@ -22,7 +22,6 @@ env:
 jobs:        
   open-release:
     runs-on: ubuntu-latest
-    needs: check-tag-exists
     steps:
       - name: Create draft release if missing
         env:
