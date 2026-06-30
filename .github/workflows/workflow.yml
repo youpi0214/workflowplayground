@@ -20,9 +20,29 @@ env:
   CHECKOUT_PATH: target-repo
 
 jobs:
+  open-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create draft release if missing
+        env:
+          GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+          TARGET_REPO: ${{ inputs.target-repo }}
+          BUILD_VERSION: ${{ inputs.build-version }}
+        run: |
+          if gh release view "$BUILD_VERSION" --repo "$TARGET_REPO" > /dev/null 2>&1; then
+            gh release edit "$BUILD_VERSION" \
+              --repo "$TARGET_REPO" \
+              --draft=true
+          else
+            gh release create "$BUILD_VERSION" \
+              --repo "$TARGET_REPO" \
+              --title "$BUILD_VERSION" \
+              --draft
+          fi
+            
   update-config:
     runs-on: ubuntu-latest
-
+    needs: open-release
     steps:
       - name: Checkout target repo
         uses: actions/checkout@v4
@@ -78,3 +98,19 @@ jobs:
           else
             echo "::warning title=Version Already Selected:: Version was already set to ${{ inputs.build-version }} in ${{ inputs.file-path }}. No changes were made."
           fi
+
+  close-release:
+    runs-on: ubuntu-latest
+    needs: [update-config]
+    if: always()
+    steps:
+      - name: Convert release back to draft
+        env:
+          GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+          TARGET_REPO: ${{ inputs.target-repo }}
+          BUILD_VERSION: ${{ inputs.build-version }}
+        run: |
+          gh release edit "$BUILD_VERSION" \
+            --repo "$TARGET_REPO" \
+            --draft=false \
+            --latest
