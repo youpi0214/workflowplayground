@@ -20,8 +20,25 @@ env:
   CHECKOUT_PATH: target-repo
 
 jobs:
+  check-tag-exists:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check tag exists
+        env:
+          GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+          TARGET_REPO: ${{ inputs.target-repo }}
+          BUILD_VERSION: ${{ inputs.build-version }}
+        run: |
+          if ! gh api "repos/$TARGET_REPO/git/ref/tags/$BUILD_VERSION" > /dev/null 2>&1; then
+            echo "::error title=Tag not found::Tag $BUILD_VERSION does not exist in $TARGET_REPO"
+            exit 1
+          fi
+  
+          echo "Tag $BUILD_VERSION exists in $TARGET_REPO"
+          
   open-release:
     runs-on: ubuntu-latest
+    needs: check-tag-exists
     steps:
       - name: Create draft release if missing
         env:
