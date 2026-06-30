@@ -76,5 +76,5 @@ jobs:
               -m "Workflow run #${{ github.run_number }} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             git push
           else
-            echo "::warning title=No changes:: Version was already set to ${{ inputs.build-version }} in ${{ inputs.file-path }}. No changes were made."
+            echo "::warning title=Version Already Selected:: Version was already set to ${{ inputs.build-version }} in ${{ inputs.file-path }}. No changes were made."
           fi
