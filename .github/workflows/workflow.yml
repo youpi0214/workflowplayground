@@ -113,4 +113,5 @@ jobs:
           gh release edit "$BUILD_VERSION" \
             --repo "$TARGET_REPO" \
             --draft=false \
+            --verify-tag \
             --latest
