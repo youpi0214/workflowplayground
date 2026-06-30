@@ -7,18 +7,17 @@ on:
         description: 'Build version'
         required: true
         type: string
-      repo-directory-path:
-        description: 'Directory path'
-        required: true
-        type: string
-      repo-file-name:
-        description: 'File name'
+      file-path:
+        description: 'File path inside target repo'
         required: true
         type: string
       target-repo:
         description: 'Target repository'
         required: true
         type: string
+
+env:
+  CHECKOUT_PATH: target-repo
 
 jobs:
   update-config:
@@ -30,16 +29,16 @@ jobs:
         with:
           repository: ${{ inputs.target-repo }}
           token: ${{ secrets.GH_BOT_TOKEN }}
-          path: ${{ inputs.repo-directory-path }}
+          path: ${{ env.CHECKOUT_PATH }}
           ref: master
 
       - name: Update YAML value
         env:
           VERSION: ${{ inputs.build-version }}
-          REPO_DIR: ${{ inputs.repo-directory-path }}
-          FILE_PATH: ${{ inputs.repo-file-name }}
+          CHECKOUT_PATH: ${{ env.CHECKOUT_PATH }}
+          FILE_PATH: ${{ inputs.file-path }}
         run: |
-          cd "$REPO_DIR"
+          cd "$CHECKOUT_PATH"
 
           python3 -m pip install pyyaml
 
@@ -61,10 +60,10 @@ jobs:
 
       - name: Commit and push to target repo
         env:
-          REPO_DIR: ${{ inputs.repo-directory-path }}
-          FILE_PATH: ${{ inputs.repo-file-name }}
+          CHECKOUT_PATH: ${{ env.CHECKOUT_PATH }}
+          FILE_PATH: ${{ inputs.file-path }}
         run: |
-          cd "$REPO_DIR"
+          cd "$CHECKOUT_PATH"
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
