@@ -30,10 +30,12 @@ jobs:
           BUILD_VERSION: ${{ inputs.build-version }}
         run: |
           if gh release view "$BUILD_VERSION" --repo "$TARGET_REPO" > /dev/null 2>&1; then
+            echo "Release $BUILD_VERSION already exists. Editing to ensure it's a draft."
             gh release edit "$BUILD_VERSION" \
               --repo "$TARGET_REPO" \
               --draft=true
           else
+            echo "Preparing to create draft release $BUILD_VERSION."
             gh release create "$BUILD_VERSION" \
               --repo "$TARGET_REPO" \
               --title "$BUILD_VERSION" \
@@ -110,6 +112,7 @@ jobs:
           TARGET_REPO: ${{ inputs.target-repo }}
           BUILD_VERSION: ${{ inputs.build-version }}
         run: |
+          echo "Officializing release $BUILD_VERSION."
           gh release edit "$BUILD_VERSION" \
             --repo "$TARGET_REPO" \
             --draft=false \
